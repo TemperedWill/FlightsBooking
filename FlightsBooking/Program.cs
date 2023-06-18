@@ -3,7 +3,7 @@ using Microsoft.OpenApi.Models;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-//test v3
+
 builder.Services.AddControllersWithViews();
 builder.Services.AddSwaggerGen(c =>
 {
