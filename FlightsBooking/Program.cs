@@ -13,8 +13,6 @@ builder.Services.AddSwaggerGen(c =>
         Url = "https://localhost:7111/"
     });
 });
-
-//testcomment;
 var app = builder.Build();
 
 app.UseSwagger().UseSwaggerUI();
