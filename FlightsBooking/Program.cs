@@ -1,11 +1,23 @@
 using Microsoft.OpenApi.Models;
 
+var policyName = "_myAllowSpecificOrigins";
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 
 //test
 builder.Services.AddControllersWithViews();
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy(name: policyName,
+        builder =>
+        {
+            builder
+                .WithOrigins("http://localhost:5145") // specifying the allowed origin
+                .WithMethods("GET") // defining the allowed HTTP method
+                .AllowAnyHeader(); // allowing any header to be sent
+        });
+});
 builder.Services.AddSwaggerGen(c =>
 {
     c.AddServer(new OpenApiServer
@@ -13,10 +25,14 @@ builder.Services.AddSwaggerGen(c =>
         Description = "Development Server",
         Url = "https://localhost:7111/"
     });
+    
+    c.CustomOperationIds(e => $"{e.ActionDescriptor.RouteValues["action"] + e.ActionDescriptor.RouteValues["controller"]}");
 });
+
 var app = builder.Build();
 
-app.UseSwagger().UseSwaggerUI();
+app.UseCors(builder => builder.AllowAnyOrigin());
+app.UseSwagger(options => { options.SerializeAsV2 = true; }).UseSwaggerUI();
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())

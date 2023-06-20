@@ -1,0 +1,6 @@
+﻿{
+  "input": "swagger.json",
+  "output": "src/app/api",
+  "skipJsonSuffix": true,
+  "removeStaleFiles": true
+}

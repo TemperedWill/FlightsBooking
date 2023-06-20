@@ -1,0 +1,1 @@
+﻿node_modules/.bin/ng-swagger-gen -i http://localhost:5145/swagger/v1/swagger.json
