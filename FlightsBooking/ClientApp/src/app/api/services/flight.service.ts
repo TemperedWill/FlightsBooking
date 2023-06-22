@@ -12,6 +12,7 @@ import { FlightRm } from '../models/flight-rm';
   providedIn: 'root',
 })
 class FlightService extends __BaseService {
+  static readonly FindFlightPath = '/Flight/{id}';
   static readonly SearchFlightPath = '/Flight';
 
   constructor(
@@ -19,6 +20,42 @@ class FlightService extends __BaseService {
     http: HttpClient
   ) {
     super(config, http);
+  }
+
+  /**
+   * @param id undefined
+   * @return Success
+   */
+  FindFlightResponse(id: string): __Observable<__StrictHttpResponse<FlightRm>> {
+    let __params = this.newParams();
+    let __headers = new HttpHeaders();
+    let __body: any = null;
+
+    let req = new HttpRequest<any>(
+      'GET',
+      this.rootUrl + `/Flight/${encodeURIComponent(String(id))}`,
+      __body,
+      {
+        headers: __headers,
+        params: __params,
+        responseType: 'json'
+      });
+
+    return this.http.request<any>(req).pipe(
+      __filter(_r => _r instanceof HttpResponse),
+      __map((_r) => {
+        return _r as __StrictHttpResponse<FlightRm>;
+      })
+    );
+  }
+  /**
+   * @param id undefined
+   * @return Success
+   */
+  FindFlight(id: string): __Observable<FlightRm> {
+    return this.FindFlightResponse(id).pipe(
+      __map(_r => _r.body as FlightRm)
+    );
   }
 
   /**

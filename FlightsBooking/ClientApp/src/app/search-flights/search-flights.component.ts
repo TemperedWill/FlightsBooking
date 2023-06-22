@@ -25,6 +25,8 @@ export class SearchFlightsComponent implements OnInit {
   }
 
   private handleError(err: any){
+    console.log("Response error. Status: ", err.status)
+    console.log("Response error. Status text: ", err.status)
     console.log(err)
   }
 }

@@ -3,6 +3,8 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace FlightsBooking.Controllers
 {
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     [ApiController]
     [Route("[controller]")]
     public class FlightController : ControllerBase
@@ -69,10 +71,17 @@ namespace FlightsBooking.Controllers
             _logger = logger;
         }
 
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(FlightRm),200)]
         [HttpGet("{id}")]
-        public FlightRm Find(Guid id) => flights.SingleOrDefault(f => f.Id == id);
+        public ActionResult<FlightRm> Find(Guid id) 
+        {
+            var flight = flights.SingleOrDefault(f => f.Id == id);
+            if (flight != null) return Ok(flight);
+            else return NotFound();
+        }
 
-
+        [ProducesResponseType(typeof(IEnumerable<FlightRm>), 200)] 
         [HttpGet]
         public IEnumerable<FlightRm> Search() => flights;
 
