@@ -1,6 +1,6 @@
 using Microsoft.OpenApi.Models;
 
-var policyName = "_myAllowSpecificOrigins";
+var AllowServerOrigins = "_allowServerOrigins";
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -9,12 +9,12 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllersWithViews();
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy(name: policyName,
-        builder =>
+    options.AddPolicy(name: "AllowServerOrigins",
+        policy =>
         {
-            builder
-                .WithOrigins("http://localhost:5145") // specifying the allowed origin
-                .WithMethods("GET") // defining the allowed HTTP method
+            policy
+                .WithOrigins("http://localhost:5145", "https://localhost:7111", "https://localhost:44441") // specifying the allowed origin
+                .AllowAnyMethod() // defining the allowed HTTP method
                 .AllowAnyHeader(); // allowing any header to be sent
         });
 });
@@ -31,7 +31,7 @@ builder.Services.AddSwaggerGen(c =>
 
 var app = builder.Build();
 
-app.UseCors(builder => builder.AllowAnyOrigin());
+
 app.UseSwagger(options => { options.SerializeAsV2 = true; }).UseSwaggerUI();
 
 // Configure the HTTP request pipeline.
@@ -45,6 +45,7 @@ app.UseHttpsRedirection();
 app.UseStaticFiles();
 app.UseRouting();
 
+app.UseCors(builder => builder.WithOrigins("*").AllowAnyMethod().AllowAnyHeader());
 
 app.MapControllerRoute(
     name: "default",

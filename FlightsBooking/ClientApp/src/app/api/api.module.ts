@@ -4,6 +4,7 @@ import { HttpClientModule } from '@angular/common/http';
 import { ApiConfiguration, ApiConfigurationInterface } from './api-configuration';
 
 import { FlightService } from './services/flight.service';
+import { PassengerService } from './services/passenger.service';
 
 /**
  * Provider for all Api services, plus ApiConfiguration
@@ -18,7 +19,8 @@ import { FlightService } from './services/flight.service';
   declarations: [],
   providers: [
     ApiConfiguration,
-    FlightService
+    FlightService,
+    PassengerService
   ],
 })
 export class ApiModule {
