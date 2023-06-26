@@ -9,13 +9,14 @@ export class AuthService {
 
   currentUser?: User;
 
-  loginUser(user: User){
-    if(user.email==null){
+  loginUser(user: User): boolean{
+    if(user.email==null || user.email == ""){
       console.log("empty email address provided, can't login")
-      return;
+      return false;
     }
     console.log("Logging in with email: ", user.email);
     this.currentUser = user;
+    return true;
   }
 }
 
