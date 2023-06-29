@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import {PassengerService} from "../api/services/passenger.service";
-import {FormBuilder, FormControl} from "@angular/forms";
+import {FormBuilder, FormControl, NonNullableFormBuilder, Validators} from "@angular/forms";
 import {AuthService} from "../auth/auth.service";
 import {Router} from "@angular/router";
 import {BookFlightComponent} from "../book-flight/book-flight.component";
@@ -17,10 +17,17 @@ export class RegisterPassengerComponent implements OnInit {
               private router: Router) { }
 
   form = this.fb.group({
-    email: new FormControl("", {nonNullable: true}),
-    firstName: new FormControl("", {nonNullable: true}),
-    lastName: new FormControl("", {nonNullable: true}),
-    isFemale: new FormControl(true, {nonNullable: true}),
+    email: new FormControl("", {nonNullable:true, validators: [Validators.required,
+                                                                          Validators.email,
+                                                                          Validators.min(3),
+                                                                          Validators.max(100)]}),
+    firstName: new FormControl("", {nonNullable: true, validators: [Validators.required,
+                                                                              Validators.minLength(2),
+                                                                              Validators.maxLength(35)]}),
+    lastName: new FormControl("", {nonNullable: true, validators: [Validators.required,
+                                                                              Validators.minLength(2),
+                                                                              Validators.maxLength(35)]}),
+    isFemale: new FormControl(true, {nonNullable: true, validators: [Validators.required]})
   })
 
   loginAlerts: boolean = false; //turn on alerts //TODO: alert fires twice in a row, let's turn it off for now
@@ -29,6 +36,7 @@ export class RegisterPassengerComponent implements OnInit {
   }
 
   checkPassenger(): void{
+    if (this.form.invalid) return;
     const params = {email: this.form.get('email')!.value}
 
     this.passengerService.FindPassenger(params.email).subscribe({next: this.login, error: e=> {if(e.status!=404 ) console.error(e);}});
@@ -36,6 +44,7 @@ export class RegisterPassengerComponent implements OnInit {
 
 
   register(){
+    if (this.form.invalid) return;
     console.log("Form Values: ", this.form.value);
     this.passengerService.RegisterPassenger(this.form.value)
       .subscribe({next: this.login,
@@ -47,6 +56,7 @@ export class RegisterPassengerComponent implements OnInit {
   }
 
   private login = () => {
+    if(this.form.invalid) return;
     let loginStatus = this.authService.loginUser({email: this.form.get('email')!.value});
     if (this.loginAlerts && loginStatus) alert("Login is successful rerouting to the main page");
     this.router.navigate(['/search-flights']);

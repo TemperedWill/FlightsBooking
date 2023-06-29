@@ -4,7 +4,11 @@
     <div class="form-floating">
       <input (blur)="checkPassenger()" formControlName="email" placeholder="Email" class="form-control" type="text"/>
       <label for="email">Email</label>
-
+      <div *ngIf="this.form.controls.email.invalid && (this.form.controls.email.dirty || this.form.controls.email.touched)" class="invalid-feedback d-block">
+        <div *ngIf="this.form.controls.email.errors" class="">
+          <div>Некорректный почтовый адрес</div>
+        </div>
+      </div>
     </div>
     <div class="d-grid gap-3">
 
@@ -12,14 +16,26 @@
 
         <input class="form-control" formControlName="firstName" type="text" id="firstName" placeholder="First Name"/>
         <label class="form-label" for="firstName">First Name</label>
-
+        <div
+          *ngIf="this.form.controls.firstName.invalid && (this.form.controls.firstName.dirty || this.form.controls.firstName.touched)"
+          class="invalid-feedback d-block">
+          <div *ngIf="this.form.controls.firstName.errors" class="">
+            <div>Имя должно быть от 2 до 35 знаков</div>
+          </div>
+        </div>
       </div>
 
       <div class="form-floating">
 
         <input class="form-control" formControlName="lastName" id="lastName" type="text" placeholder="Last Name"/>
         <label class="form-label" for="lastName">Last Name</label>
-
+        <div
+          *ngIf="this.form.controls.lastName.invalid && (this.form.controls.lastName.dirty || this.form.controls.lastName.touched)"
+          class="invalid-feedback d-block">
+          <div *ngIf="this.form.controls.lastName.errors" class="">
+            <div>Фамилия должна быть от 2 до 35 знаков</div>
+          </div>
+        </div>
       </div>
 
 
