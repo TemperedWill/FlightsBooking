@@ -31,15 +31,15 @@ export class RegisterPassengerComponent implements OnInit {
   checkPassenger(): void{
     const params = {email: this.form.get('email')!.value}
 
-    this.passengerService.FindPassenger(params.email).subscribe(this.login, e=> {if(e.status!=404) console.error(e);});
+    this.passengerService.FindPassenger(params.email).subscribe({next: this.login, error: e=> {if(e.status!=404 ) console.error(e);}});
   }
 
 
   register(){
     console.log("Form Values: ", this.form.value);
     this.passengerService.RegisterPassenger(this.form.value)
-      .subscribe(this.login,
-        console.error);
+      .subscribe({next: this.login,
+       error: console.error });
   }
 
   private alertLogin = () => {

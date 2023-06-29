@@ -1,5 +1,7 @@
-﻿using FlightsBooking.ReadModels;
+﻿using System.Collections;
+using FlightsBooking.ReadModels;
 using Microsoft.AspNetCore.Mvc;
+using FlightsBooking.Dtos;
 
 namespace FlightsBooking.Controllers
 {
@@ -15,7 +17,7 @@ namespace FlightsBooking.Controllers
         
         static Random random = new Random();
         private static FlightRm[] flights = new FlightRm[]
-            {
+        {
                         new (   Guid.NewGuid(),
                             "American Airlines",
                             random.Next(90, 5000).ToString(),
@@ -66,6 +68,7 @@ namespace FlightsBooking.Controllers
                                 random.Next(1, 853)) 
                     };
 
+        static private IList<BookDto> bookings = new List<BookDto>();
         public FlightController(ILogger<FlightController> logger)
         {
             _logger = logger;
@@ -84,6 +87,23 @@ namespace FlightsBooking.Controllers
         [ProducesResponseType(typeof(IEnumerable<FlightRm>), 200)] 
         [HttpGet]
         public IEnumerable<FlightRm> Search() => flights;
+
+        [HttpPost]
+        [ProducesResponseType(404)]
+        [ProducesResponseType(200)]
+        public IActionResult Book(BookDto dto)
+        {
+            System.Diagnostics.Debug.WriteLine($"Booking a new flight {dto.FlightId}");
+
+            var flightFound = flights.Any(f => f.Id == dto.FlightId);
+
+            if (flightFound == false)
+                return NotFound();
+
+            bookings.Add(dto);
+            
+            return CreatedAtAction(nameof(Find), new { id = dto.FlightId });
+        }
 
     }
 }
