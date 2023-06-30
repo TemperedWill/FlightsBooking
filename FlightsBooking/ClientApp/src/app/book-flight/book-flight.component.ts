@@ -46,10 +46,15 @@ export class BookFlightComponent implements OnInit {
       alert("Flight not found!")
       this.router.navigate(['/search-flights'])
     }
+    if (err.status == 409) {
+      console.log("err: " + err.error.message);
+      alert(err.error.message);
+    }
     console.log("Response error. Status: ", err.status)
     console.log("Response error. Status text: ", err.status)
     console.log(err)
   }
+
   book() {
     if(this.form.invalid) return;
 
@@ -62,7 +67,7 @@ export class BookFlightComponent implements OnInit {
     }
 
     this.flightService.BookFlight(booking)
-      .subscribe(_=> this.router.navigate(['/my-bookings']),this.handleError);
+      .subscribe({next: _=> this.router.navigate(['/my-bookings']), error:this.handleError});
   }
 
   get number(){

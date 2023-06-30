@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { FlightService } from "../api/services/flight.service";
 import { FlightRm } from "../api/models/flight-rm";
+import {Router} from "@angular/router";
 
 @Component({
   selector: 'app-search-flights',
@@ -11,12 +12,12 @@ export class SearchFlightsComponent implements OnInit {
 
   searchResult : FlightRm[] = [
   ]
-  constructor(private flightService: FlightService) {
+  constructor(private flightService: FlightService,
+              private router: Router) {
 
   }
-
-
   ngOnInit(): void {
+
   }
 
   search(){
@@ -25,6 +26,8 @@ export class SearchFlightsComponent implements OnInit {
   }
 
   private handleError(err: any){
+
+
     console.log("Response error. Status: ", err.status)
     console.log("Response error. Status text: ", err.status)
     console.log(err)
