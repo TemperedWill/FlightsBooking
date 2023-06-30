@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using FlightsBooking.Domain.Entities;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using FlightsBooking.Dtos; 
 using FlightsBooking.ReadModels;
@@ -9,7 +10,7 @@ namespace FlightsBooking.Controllers;
 [ApiController]
 public class PassengerController : ControllerBase
 {
-    static private IList<NewPassengerDto> Passengers = new List<NewPassengerDto>();
+    static private IList<Passenger> Passengers = new List<Passenger>();
 
     [HttpPost]
     [ProducesResponseType(201)]
@@ -17,7 +18,7 @@ public class PassengerController : ControllerBase
     [ProducesResponseType(500)]
     public IActionResult Register(NewPassengerDto passengerDto)
     {
-        Passengers.Add(passengerDto); //Тут наверное по хорошему надо бы вставлять в массив саму модель а не DTO?
+        Passengers.Add(new Passenger(passengerDto.Email, passengerDto.FirstName, passengerDto.LastName, passengerDto.isFemale)); //Тут наверное по хорошему надо бы вставлять в массив саму модель а не DTO?
         System.Diagnostics.Debug.WriteLine(Passengers.Count);
         return CreatedAtAction(nameof(Find), new {email = passengerDto.Email});
     }
