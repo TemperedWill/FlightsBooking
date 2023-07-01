@@ -1,4 +1,5 @@
-﻿using FlightsBooking.Domain.Entities;
+﻿using FlightsBooking.Data;
+using FlightsBooking.Domain.Entities;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using FlightsBooking.Dtos; 
@@ -10,7 +11,12 @@ namespace FlightsBooking.Controllers;
 [ApiController]
 public class PassengerController : ControllerBase
 {
-    static private IList<Passenger> Passengers = new List<Passenger>();
+    private readonly Entities _entities;
+
+    public PassengerController(Entities entities)
+    {
+        _entities = entities;
+    }
 
     [HttpPost]
     [ProducesResponseType(201)]
@@ -18,8 +24,8 @@ public class PassengerController : ControllerBase
     [ProducesResponseType(500)]
     public IActionResult Register(NewPassengerDto passengerDto)
     {
-        Passengers.Add(new Passenger(passengerDto.Email, passengerDto.FirstName, passengerDto.LastName, passengerDto.isFemale)); //Тут наверное по хорошему надо бы вставлять в массив саму модель а не DTO?
-        System.Diagnostics.Debug.WriteLine(Passengers.Count);
+        _entities.Passengers.Add(new Passenger(passengerDto.Email, passengerDto.FirstName, passengerDto.LastName, passengerDto.isFemale)); //Тут наверное по хорошему надо бы вставлять в массив саму модель а не DTO?
+        System.Diagnostics.Debug.WriteLine(_entities.Passengers.Count);
         return CreatedAtAction(nameof(Find), new {email = passengerDto.Email});
     }
 
@@ -28,7 +34,7 @@ public class PassengerController : ControllerBase
     [ProducesResponseType(200)]
     public ActionResult<PassengerRm> Find(string email)
     {
-        var passenger = Passengers.FirstOrDefault(x => x.Email == email);
+        var passenger = _entities.Passengers.FirstOrDefault(x => x.Email == email);
         if (passenger == null) return NotFound();
         var rm = new PassengerRm(
             passenger.Email,
