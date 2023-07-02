@@ -5,11 +5,11 @@ using FlightsBooking.Domain.Entities;
 using FlightsBooking.Domain.Errors;
 using Microsoft.AspNetCore.Mvc;
 using FlightsBooking.Dtos;
+using Microsoft.EntityFrameworkCore;
 
 
 namespace FlightsBooking.Controllers
 {
-    
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     [ApiController]
@@ -17,9 +17,10 @@ namespace FlightsBooking.Controllers
     public class FlightController : ControllerBase
     {
         private readonly ILogger<FlightController> _logger;
-        
+
         private readonly Entities _entities;
-        public FlightController(ILogger<FlightController> logger, 
+
+        public FlightController(ILogger<FlightController> logger,
             Entities entities)
         {
             _logger = logger;
@@ -27,9 +28,9 @@ namespace FlightsBooking.Controllers
         }
 
         [ProducesResponseType(StatusCodes.Status404NotFound)]
-        [ProducesResponseType(typeof(FlightRm),200)]
+        [ProducesResponseType(typeof(FlightRm), 200)]
         [HttpGet("{id}")]
-        public ActionResult<FlightRm> Find(Guid id) 
+        public ActionResult<FlightRm> Find(Guid id)
         {
             var flight = _entities.Flights.SingleOrDefault(f => f.Id == id);
             if (flight == null) return NotFound();
@@ -42,7 +43,7 @@ namespace FlightsBooking.Controllers
                 new TimePlaceRm(flight.Arrival.Place.ToString(), flight.Arrival.Time),
                 flight.RemainingSeats
             );
-            
+
             return Ok(flight);
         }
 
@@ -73,18 +74,23 @@ namespace FlightsBooking.Controllers
 
             if (flight == null)
                 return NotFound();
-            
+
             var error = flight.MakeBooking(dto.PassengerEmail, dto.NumberOfSeats);
 
             if (error is OverbookError)
-                return Conflict(new { message = "Количество запрашиваемых мест превышает количество свободных."});
-            
-            _entities.SaveChanges();
-            
-            return CreatedAtAction(nameof(Find), new { id = dto.FlightId });
-            
-            
-        }
+                return Conflict(new { message = "Количество запрашиваемых мест превышает количество свободных." });
 
+            try
+            {
+                _entities.SaveChanges();
+            }
+            catch (DbUpdateConcurrencyException e)
+            {
+                return Conflict(new { message = "Возникла ошибка при регистрации полета, попробуйте снова" });
+            }
+
+
+            return CreatedAtAction(nameof(Find), new { id = dto.FlightId });
+        }
     }
 }
