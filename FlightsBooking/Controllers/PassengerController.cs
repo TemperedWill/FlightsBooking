@@ -25,8 +25,9 @@ public class PassengerController : ControllerBase
     public IActionResult Register(NewPassengerDto passengerDto)
     {
         _entities.Passengers.Add(new Passenger(passengerDto.Email, passengerDto.FirstName, passengerDto.LastName, passengerDto.isFemale)); //Тут наверное по хорошему надо бы вставлять в массив саму модель а не DTO?
-        System.Diagnostics.Debug.WriteLine(_entities.Passengers.Count);
+        _entities.SaveChanges();
         return CreatedAtAction(nameof(Find), new {email = passengerDto.Email});
+        
     }
 
     [HttpGet("{email}")]

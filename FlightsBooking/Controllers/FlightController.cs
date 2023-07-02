@@ -78,7 +78,11 @@ namespace FlightsBooking.Controllers
 
             if (error is OverbookError)
                 return Conflict(new { message = "Количество запрашиваемых мест превышает количество свободных."});
+            
+            _entities.SaveChanges();
+            
             return CreatedAtAction(nameof(Find), new { id = dto.FlightId });
+            
             
         }
 

@@ -1,10 +1,15 @@
 using FlightsBooking.Data;
 using Microsoft.OpenApi.Models;
 using FlightsBooking.Domain.Entities;
+using Microsoft.EntityFrameworkCore;
 
 var AllowServerOrigins = "_allowServerOrigins";
 var builder = WebApplication.CreateBuilder(args);
+// Add db context
 
+builder.Services.AddDbContext<Entities>(
+    options=> options.UseInMemoryDatabase(databaseName: "Flights"), ServiceLifetime.Singleton);
+//TODO: Change context to use SQL Database instead of InMemory One (options=> options.UseSqlServer)
 // Add services to the container.
 
 //test
@@ -92,7 +97,7 @@ Flight[] flightsToSeed = new Flight[]
 
 entities.Flights.AddRange(flightsToSeed);
 
-
+entities.SaveChanges();
 
 
 app.UseSwagger(options => { options.SerializeAsV2 = true; }).UseSwaggerUI();
