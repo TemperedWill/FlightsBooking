@@ -3,6 +3,7 @@ import { NgModule, ModuleWithProviders } from '@angular/core';
 import { HttpClientModule } from '@angular/common/http';
 import { ApiConfiguration, ApiConfigurationInterface } from './api-configuration';
 
+import { BookingService } from './services/booking.service';
 import { FlightService } from './services/flight.service';
 import { PassengerService } from './services/passenger.service';
 
@@ -19,6 +20,7 @@ import { PassengerService } from './services/passenger.service';
   declarations: [],
   providers: [
     ApiConfiguration,
+    BookingService,
     FlightService,
     PassengerService
   ],

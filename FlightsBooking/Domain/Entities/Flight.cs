@@ -47,4 +47,18 @@ public class Flight
         
         return null;
     }
+    
+    public object? CancelBooking(string passengerEmail, byte numberOfSeats) //TODO: ok, но это уже прям совсем странное решение пихать такое в тутор
+        {                                                                   //TODO: модель надо переписать и удалять резервацию по ID полета и ID резервации, а не так как это делается сейчас
+            var booking = Bookings.FirstOrDefault(b =>
+                b.NumberOfSeats == numberOfSeats && passengerEmail.ToLower() == b.PassengerEmail.ToLower());
+
+            if (booking == null)
+                return new NotFoundError();
+            
+            Bookings.Remove(booking);
+            RemainingSeats += booking.NumberOfSeats;
+
+            return null; //TODO наверное лучше делать через статусы, и от них уже наследовать ошибки?
+        } 
 };
