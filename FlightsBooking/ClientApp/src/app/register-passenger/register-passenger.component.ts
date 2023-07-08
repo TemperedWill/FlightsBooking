@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import {PassengerService} from "../api/services/passenger.service";
 import {FormBuilder, FormControl, NonNullableFormBuilder, Validators} from "@angular/forms";
 import {AuthService} from "../auth/auth.service";
-import {Router} from "@angular/router";
+import {Router, ActivatedRoute} from "@angular/router";
 import {BookFlightComponent} from "../book-flight/book-flight.component";
 
 @Component({
@@ -14,7 +14,10 @@ export class RegisterPassengerComponent implements OnInit {
 
   constructor(private passengerService: PassengerService,
               private fb: FormBuilder, private authService: AuthService,
-              private router: Router) { }
+              private router: Router,
+              private activatedRoute: ActivatedRoute) { }
+
+  requestedUrl?: string = undefined;
 
   form = this.fb.group({
     email: new FormControl("", {nonNullable:true, validators: [Validators.required,
@@ -32,6 +35,7 @@ export class RegisterPassengerComponent implements OnInit {
 
   loginAlerts: boolean = false; //turn on alerts //TODO: alert fires twice in a row, let's turn it off for now
   ngOnInit(): void {
+    this.activatedRoute.params.subscribe({next: p=> this.requestedUrl = p['requestedUrl']});
     //this.login()
   }
 
@@ -59,7 +63,7 @@ export class RegisterPassengerComponent implements OnInit {
     if(this.form.invalid) return;
     let loginStatus = this.authService.loginUser({email: this.form.get('email')!.value});
     if (this.loginAlerts && loginStatus) alert("Login is successful rerouting to the main page");
-    this.router.navigate(['/search-flights']);
+    this.router.navigate([this.requestedUrl ?? '/search-flights' ]);
   }
 
 

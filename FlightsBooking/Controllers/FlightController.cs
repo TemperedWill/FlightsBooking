@@ -24,7 +24,7 @@ namespace FlightsBooking.Controllers
             Entities entities)
         {
             _logger = logger;
-            this._entities = entities;
+            _entities = entities;
         }
 
         [ProducesResponseType(StatusCodes.Status404NotFound)]
