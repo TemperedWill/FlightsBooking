@@ -8,21 +8,18 @@ using FlightsBooking.Dtos;
 using Microsoft.EntityFrameworkCore;
 
 
-namespace FlightsBooking.Controllers
-{
+namespace FlightsBooking.Controllers {
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     [ApiController]
     [Route("[controller]")]
-    public class FlightController : ControllerBase
-    {
+    public class FlightController : ControllerBase {
         private readonly ILogger<FlightController> _logger;
 
         private readonly Entities _entities;
 
         public FlightController(ILogger<FlightController> logger,
-            Entities entities)
-        {
+            Entities entities) {
             _logger = logger;
             _entities = entities;
         }
@@ -30,8 +27,7 @@ namespace FlightsBooking.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(typeof(FlightRm), 200)]
         [HttpGet("{id}")]
-        public ActionResult<FlightRm> Find(Guid id)
-        {
+        public ActionResult<FlightRm> Find(Guid id) {
             var flight = _entities.Flights.SingleOrDefault(f => f.Id == id);
             if (flight == null) return NotFound();
 
@@ -49,8 +45,7 @@ namespace FlightsBooking.Controllers
 
         [ProducesResponseType(typeof(IEnumerable<FlightRm>), 200)]
         [HttpGet]
-        public IEnumerable<FlightRm> Search()
-        {
+        public IEnumerable<FlightRm> Search() {
             var flightRmList = _entities.Flights.Select(flight => new FlightRm(
                 flight.Id,
                 flight.Airline,
@@ -66,8 +61,7 @@ namespace FlightsBooking.Controllers
         [HttpPost]
         [ProducesResponseType(404)]
         [ProducesResponseType(200)]
-        public IActionResult Book(BookDto dto)
-        {
+        public IActionResult Book(BookDto dto) {
             System.Diagnostics.Debug.WriteLine($"Booking a new flight {dto.FlightId}");
 
             var flight = _entities.Flights.SingleOrDefault(f => f.Id == dto.FlightId);
@@ -80,12 +74,10 @@ namespace FlightsBooking.Controllers
             if (error is OverbookError)
                 return Conflict(new { message = "Количество запрашиваемых мест превышает количество свободных." });
 
-            try
-            {
+            try {
                 _entities.SaveChanges();
             }
-            catch (DbUpdateConcurrencyException e)
-            {
+            catch (DbUpdateConcurrencyException e) {
                 return Conflict(new { message = "Возникла ошибка при регистрации полета, попробуйте снова" });
             }
 
