@@ -14,8 +14,8 @@ namespace FlightsBooking.Controllers {
     [ApiController]
     [Route("[controller]")]
     public class FlightController : ControllerBase {
+        
         private readonly ILogger<FlightController> _logger;
-
         private readonly Entities _entities;
 
         public FlightController(ILogger<FlightController> logger,
@@ -24,6 +24,7 @@ namespace FlightsBooking.Controllers {
             _entities = entities;
         }
 
+        
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(typeof(FlightRm), 200)]
         [HttpGet("{id}")]
@@ -43,10 +44,35 @@ namespace FlightsBooking.Controllers {
             return Ok(flight);
         }
 
+        
         [ProducesResponseType(typeof(IEnumerable<FlightRm>), 200)]
         [HttpGet]
-        public IEnumerable<FlightRm> Search() {
-            var flightRmList = _entities.Flights.Select(flight => new FlightRm(
+        public IEnumerable<FlightRm> Search([FromQuery] FlightSearchParameters @params) {   // We grab params from query string from GET URL
+            
+            _logger.LogInformation("searching for flight with destination: {destination}", @params.Destination);
+
+            IQueryable<Flight> flights = _entities.Flights;
+            
+            if (!string.IsNullOrWhiteSpace(@params.From))
+                flights = flights.Where(f => f.Departure.Place.Contains(@params.From));
+
+            if (!string.IsNullOrWhiteSpace(@params.Destination)) //rename destination into To?
+                flights = flights.Where(f => f.Arrival.Place.Contains(@params.Destination));
+
+
+            if (@params.FromDate != null)
+                flights = flights.Where(f => f.Departure.Time >= @params.FromDate.Value.Date);
+
+            if (@params.ToDate != null)
+                flights = flights.Where(f => f.Departure.Time <= @params.ToDate.Value.Date.AddDays(1).AddTicks(-1));
+
+            if (@params.NumberOfPassengers != null && @params.NumberOfPassengers != 0)
+                flights = flights.Where(f => f.RemainingSeats >= @params.NumberOfPassengers);
+            else
+                flights = flights.Where(f => f.RemainingSeats >= 1);
+            
+            
+            var flightRmList = flights.Select(flight => new FlightRm(
                 flight.Id,
                 flight.Airline,
                 flight.Price,
@@ -58,6 +84,7 @@ namespace FlightsBooking.Controllers {
             return flightRmList;
         }
 
+        
         [HttpPost]
         [ProducesResponseType(404)]
         [ProducesResponseType(200)]
@@ -80,7 +107,6 @@ namespace FlightsBooking.Controllers {
             catch (DbUpdateConcurrencyException e) {
                 return Conflict(new { message = "Возникла ошибка при регистрации полета, попробуйте снова" });
             }
-
 
             return CreatedAtAction(nameof(Find), new { id = dto.FlightId });
         }

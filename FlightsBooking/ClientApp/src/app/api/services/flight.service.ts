@@ -61,12 +61,29 @@ class FlightService extends __BaseService {
   }
 
   /**
+   * @param params The `FlightService.SearchFlightParams` containing the following parameters:
+   *
+   * - `toDate`:
+   *
+   * - `numberOfPassengers`:
+   *
+   * - `fromDate`:
+   *
+   * - `from`:
+   *
+   * - `destination`:
+   *
    * @return Success
    */
-  SearchFlightResponse(): __Observable<__StrictHttpResponse<Array<FlightRm>>> {
+  SearchFlightResponse(params: FlightService.SearchFlightParams): __Observable<__StrictHttpResponse<Array<FlightRm>>> {
     let __params = this.newParams();
     let __headers = new HttpHeaders();
     let __body: any = null;
+    if (params.toDate != null) __params = __params.set('toDate', params.toDate.toString());
+    if (params.numberOfPassengers != null) __params = __params.set('numberOfPassengers', params.numberOfPassengers.toString());
+    if (params.fromDate != null) __params = __params.set('fromDate', params.fromDate.toString());
+    if (params.from != null) __params = __params.set('from', params.from.toString());
+    if (params.destination != null) __params = __params.set('destination', params.destination.toString());
     let req = new HttpRequest<any>(
       'GET',
       this.rootUrl + `/Flight`,
@@ -85,10 +102,22 @@ class FlightService extends __BaseService {
     );
   }
   /**
+   * @param params The `FlightService.SearchFlightParams` containing the following parameters:
+   *
+   * - `toDate`:
+   *
+   * - `numberOfPassengers`:
+   *
+   * - `fromDate`:
+   *
+   * - `from`:
+   *
+   * - `destination`:
+   *
    * @return Success
    */
-  SearchFlight(): __Observable<Array<FlightRm>> {
-    return this.SearchFlightResponse().pipe(
+  SearchFlight(params: FlightService.SearchFlightParams): __Observable<Array<FlightRm>> {
+    return this.SearchFlightResponse(params).pipe(
       __map(_r => _r.body as Array<FlightRm>)
     );
   }
@@ -129,6 +158,17 @@ class FlightService extends __BaseService {
 }
 
 module FlightService {
+
+  /**
+   * Parameters for SearchFlight
+   */
+  export interface SearchFlightParams {
+    toDate?: string;
+    numberOfPassengers?: number;
+    fromDate?: string;
+    from?: string;
+    destination?: string;
+  }
 }
 
 export { FlightService }

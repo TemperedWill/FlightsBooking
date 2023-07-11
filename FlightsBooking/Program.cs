@@ -27,6 +27,7 @@ builder.Services.AddCors(options =>
 });
 builder.Services.AddSwaggerGen(c =>
 {
+    c.DescribeAllParametersInCamelCase();
     c.AddServer(new OpenApiServer
     {
         Description = "Development Server",
