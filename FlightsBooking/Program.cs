@@ -111,7 +111,7 @@ app.UseSwagger(options => { options.SerializeAsV2 = true; }).UseSwaggerUI();
 if (!app.Environment.IsDevelopment())
 {
     // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
-    app.UseHsts();
+    app.UseHsts(); // We use HSTS to force client to use https for more secure connection
 }
 
 app.UseHttpsRedirection();

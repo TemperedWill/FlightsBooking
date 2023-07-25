@@ -56,7 +56,6 @@ export class RegisterPassengerComponent implements OnInit {
   }
 
   private alertLogin = () => {
-
   }
 
   private login = () => {

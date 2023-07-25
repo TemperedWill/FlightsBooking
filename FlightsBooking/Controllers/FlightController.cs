@@ -53,12 +53,12 @@ namespace FlightsBooking.Controllers {
 
             IQueryable<Flight> flights = _entities.Flights;
             
+            // Adding search parameters 
             if (!string.IsNullOrWhiteSpace(@params.From))
                 flights = flights.Where(f => f.Departure.Place.Contains(@params.From));
 
             if (!string.IsNullOrWhiteSpace(@params.Destination)) //rename destination into To?
                 flights = flights.Where(f => f.Arrival.Place.Contains(@params.Destination));
-
 
             if (@params.FromDate != null)
                 flights = flights.Where(f => f.Departure.Time >= @params.FromDate.Value.Date);
@@ -70,6 +70,7 @@ namespace FlightsBooking.Controllers {
                 flights = flights.Where(f => f.RemainingSeats >= @params.NumberOfPassengers);
             else
                 flights = flights.Where(f => f.RemainingSeats >= 1);
+            
             
             
             var flightRmList = flights.Select(flight => new FlightRm(
