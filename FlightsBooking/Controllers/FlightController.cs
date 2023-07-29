@@ -5,6 +5,7 @@ using FlightsBooking.Domain.Entities;
 using FlightsBooking.Domain.Errors;
 using Microsoft.AspNetCore.Mvc;
 using FlightsBooking.Dtos;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
 
 
@@ -45,6 +46,7 @@ namespace FlightsBooking.Controllers {
         }
 
         
+        [Authorize]
         [ProducesResponseType(typeof(IEnumerable<FlightRm>), 200)]
         [HttpGet]
         public IEnumerable<FlightRm> Search([FromQuery] FlightSearchParameters @params) {   // We grab params from query string from GET URL

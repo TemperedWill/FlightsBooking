@@ -1,7 +1,12 @@
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using FlightsBooking.Config;
 using FlightsBooking.Data;
 using Microsoft.OpenApi.Models;
 using FlightsBooking.Domain.Entities;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 
 var AllowServerOrigins = "_allowServerOrigins";
 var builder = WebApplication.CreateBuilder(args);
@@ -13,6 +18,26 @@ builder.Services.AddDbContext<Entities>(
 // Add services to the container.
 
 //test
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(options => {
+        options.TokenValidationParameters = new TokenValidationParameters {
+            // Будет ли валидироваьтся издатель
+            ValidateIssuer = true,
+            // Имя издателя (Любое по уссмотрению)
+            ValidIssuer = AuthOptions.TOKEN_ISSUER,
+            // Будет ли вилидироваться потребитель токена
+            ValidateAudience = true,
+            // Имя потребителя токена (Любое)
+            ValidAudience = AuthOptions.TOKEN_AUDIENCE,
+            // Будет ли валидироваться время существования
+            ValidateLifetime = true,
+            // Установка ключа безопасности
+            IssuerSigningKey = AuthOptions.GetSymmetricSecurityKey(),
+            // Валидация ключа безопасности
+            ValidateIssuerSigningKey = true,
+        };
+    });
+builder.Services.AddAuthorization(); 
 builder.Services.AddControllersWithViews();
 builder.Services.AddCors(options =>
 {
@@ -103,8 +128,6 @@ entities.Flights.AddRange(flightsToSeed);
 entities.SaveChanges();
 }
 
-
-
 app.UseSwagger(options => { options.SerializeAsV2 = true; }).UseSwaggerUI();
 
 // Configure the HTTP request pipeline.
@@ -114,11 +137,34 @@ if (!app.Environment.IsDevelopment())
     app.UseHsts(); // We use HSTS to force client to use https for more secure connection
 }
 
-app.UseHttpsRedirection();
+
+app.UseHttpsRedirection(); // Сервисы должны инициализироваться в строгом порядке.
 app.UseStaticFiles();
 app.UseRouting();
 
 app.UseCors(builder => builder.WithOrigins("*").AllowAnyMethod().AllowAnyHeader());
+
+app.UseAuthentication();
+app.UseAuthorization();
+
+app.UseEndpoints(endpoints => { endpoints.MapControllers(); });
+
+
+
+//TODO: Remove this
+app.Map("/login/{username}", (string username) => {
+    var claims = new List<Claim> { new Claim(ClaimTypes.Name, username) };
+    // создаем JWT-токен
+    var jwt = new JwtSecurityToken(
+        issuer: AuthOptions.TOKEN_ISSUER,
+        audience: AuthOptions.TOKEN_AUDIENCE,
+        claims: claims,
+        expires: DateTime.UtcNow.Add(TimeSpan.FromDays(1)),
+        signingCredentials: new SigningCredentials(AuthOptions.GetSymmetricSecurityKey(),
+            SecurityAlgorithms.HmacSha256));
+
+    return new JwtSecurityTokenHandler().WriteToken(jwt);
+});
 
 app.MapControllerRoute(
     name: "default",

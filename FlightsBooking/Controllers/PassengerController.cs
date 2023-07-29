@@ -4,6 +4,8 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using FlightsBooking.Dtos; 
 using FlightsBooking.ReadModels;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.CookiePolicy;
 
 namespace FlightsBooking.Controllers;
 
@@ -26,10 +28,9 @@ public class PassengerController : ControllerBase
     {
         _entities.Passengers.Add(new Passenger(passengerDto.Email, passengerDto.FirstName, passengerDto.LastName, passengerDto.isFemale)); //Тут наверное по хорошему надо бы вставлять в массив саму модель а не DTO?
         _entities.SaveChanges();
-        return CreatedAtAction(nameof(Find), new {email = passengerDto.Email});
-        
+        return CreatedAtAction(nameof(Find), new { email = passengerDto.Email });
     }
-
+    
     [HttpGet("{email}")]
     [ProducesResponseType(404)]
     [ProducesResponseType(200)]
@@ -37,6 +38,7 @@ public class PassengerController : ControllerBase
     {
         var passenger = _entities.Passengers.FirstOrDefault(x => x.Email == email);
         if (passenger == null) return NotFound();
+
         var rm = new PassengerRm(
             passenger.Email,
             passenger.FirstName,

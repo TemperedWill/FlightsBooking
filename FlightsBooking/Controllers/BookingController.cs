@@ -3,6 +3,8 @@ using FlightsBooking.ReadModels;
 using Microsoft.AspNetCore.Mvc;
 using FlightsBooking.Dtos;
 using FlightsBooking.Domain.Errors;
+using Microsoft.AspNetCore.Authorization;
+
 namespace FlightsBooking.Controllers;
 
 [Route("[controller]")]
@@ -16,6 +18,7 @@ public class BookingController : ControllerBase
         _entities = entities;
     }
 
+    [Authorize]
     [HttpGet("{email}")]
     [ProducesResponseType(500)]
     [ProducesResponseType(400)]
