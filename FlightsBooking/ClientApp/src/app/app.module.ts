@@ -1,7 +1,7 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { HttpClientModule } from '@angular/common/http';
+import {HTTP_INTERCEPTORS, HttpClientModule} from '@angular/common/http';
 import { RouterModule } from '@angular/router';
 import { AuthGuard } from "./auth/auth.guard";
 
@@ -11,6 +11,7 @@ import { SearchFlightsComponent } from './search-flights/search-flights.componen
 import { BookFlightComponent } from './book-flight/book-flight.component';
 import { RegisterPassengerComponent } from './register-passenger/register-passenger.component';
 import { MyBookingsComponent } from './my-bookings/my-bookings.component';
+import {AddAuthHeaderInterceptor} from "./http-interceptors/AddAuthHeaderInterceptor";
 
 @NgModule({
   declarations: [
@@ -34,7 +35,11 @@ import { MyBookingsComponent } from './my-bookings/my-bookings.component';
       {path: 'my-bookings', component: MyBookingsComponent, canActivate: [AuthGuard]}
     ])
   ],
-  providers: [],
+  providers: [{
+    provide: HTTP_INTERCEPTORS,
+    useClass: AddAuthHeaderInterceptor,
+    multi: true,
+  }],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

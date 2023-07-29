@@ -17,8 +17,6 @@ class FlightService extends __BaseService {
   static readonly SearchFlightPath = '/Flight';
   static readonly BookFlightPath = '/Flight';
 
-  public static token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1lIjoiV2lsbCIsImV4cCI6MTY5MDYzMTc3NSwiaXNzIjoiTWFpblNlcnZlciIsImF1ZCI6IkZyb250RW5kQ2xpZW50In0.kcMM6pDL1vuDZDwb-wkMxDiXUMllYgmrK2sh6FtMsH0";
-
   constructor(
     config: __Configuration,
     http: HttpClient
@@ -79,19 +77,13 @@ class FlightService extends __BaseService {
    */
   SearchFlightResponse(params: FlightService.SearchFlightParams): __Observable<__StrictHttpResponse<Array<FlightRm>>> {
     let __params = this.newParams();
-    let __headers = new HttpHeaders({
-      "Authorization":
-      "Bearer " +FlightService.token});
-    //__headers.append("Authorization",
-    //  "Bearer " + FlightService.token);
+    let __headers = new HttpHeaders();
     let __body: any = null;
     if (params.toDate != null) __params = __params.set('toDate', params.toDate.toString());
     if (params.numberOfPassengers != null) __params = __params.set('numberOfPassengers', params.numberOfPassengers.toString());
     if (params.fromDate != null) __params = __params.set('fromDate', params.fromDate.toString());
     if (params.from != null) __params = __params.set('from', params.from.toString());
     if (params.destination != null) __params = __params.set('destination', params.destination.toString());
-    //__headers.append("test",
-    //  "Bearer ");
     let req = new HttpRequest<any>(
       'GET',
       this.rootUrl + `/Flight`,

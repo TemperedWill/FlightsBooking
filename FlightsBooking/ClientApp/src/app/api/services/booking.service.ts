@@ -15,7 +15,6 @@ import { BookDto } from '../models/book-dto';
 class BookingService extends __BaseService {
   static readonly ListBookingPath = '/Booking/{email}';
   static readonly CancelBookingPath = '/Booking';
-  public static token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9uYW1lIjoiV2lsbCIsImV4cCI6MTY5MDYzMDQ4MSwiaXNzIjoiTWFpblNlcnZlciIsImF1ZCI6IkZyb250RW5kQ2xpZW50In0.f86iKnUlFJAwgIwhcOnpQWzoEg27kaK2LTHHWv-_oT0";
 
   constructor(
     config: __Configuration,
