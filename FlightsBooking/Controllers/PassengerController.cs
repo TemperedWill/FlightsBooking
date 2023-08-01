@@ -49,6 +49,7 @@ public class PassengerController : ControllerBase {
         return Ok(rm);
     }
 
+    // Attempt authenticating user using email and password? //TODO: add password to auth
     [HttpGet("{email}")] // TODO: Заменить GET на POST?
     [ProducesResponseType(404)]
     [ProducesResponseType(200)]
@@ -62,7 +63,9 @@ public class PassengerController : ControllerBase {
             passenger.LastName,
             passenger.isFemale); // TODO: Сделать проверку пароля
         
-        var claims = new List<Claim> { new Claim(ClaimTypes.Name, passenger.Email) };
+        // List of claims, containing important info about user, be careful with it, as it can easily inflate your JWT token
+        var claims = new List<Claim> { new Claim(ClaimTypes.Name, passenger.Email), new Claim(ClaimTypes.Role, "Manager"), new Claim(ClaimTypes.Role, "FlightPassenger"), new Claim(ClaimTypes.Role, "Admin"),};
+        
         // создаем JWT-токен
         var jwt = new JwtSecurityToken(
             issuer: AuthOptions.TOKEN_ISSUER,

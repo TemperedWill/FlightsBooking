@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import {ActivatedRoute, Router} from "@angular/router";
 import {FlightService} from "../api/services/flight.service";
 import {FlightRm} from "../api/models/flight-rm";
@@ -17,7 +17,8 @@ export class BookFlightComponent implements OnInit {
               private router: Router,
               private flightService: FlightService,
               private authService: AuthService,
-              private fb: FormBuilder) { }
+              private fb: FormBuilder) {
+  }
 
   flightId: string = 'not loaded';
   flight: FlightRm = {};
@@ -27,17 +28,17 @@ export class BookFlightComponent implements OnInit {
   })
 
   ngOnInit(): void {
-    this.route.paramMap.subscribe(p=> this.findFlight(p.get("flightId")));
+    this.route.paramMap.subscribe(p => this.findFlight(p.get("flightId")));
   }
 
-  private findFlight = (flightId: string | null)=>{
+  private findFlight = (flightId: string | null) => {
     this.flightId = flightId ?? 'not passed';
     this.flightService.FindFlight(this.flightId).subscribe(flight => this.flight = flight, this.handleError);
   }
 
-  private handleError = (err: any) =>{
+  private handleError = (err: any) => {
 
-    if(err.status == 404){
+    if (err.status == 404) {
       alert("Flight not found!")
       this.router.navigate(['/search-flights'])
     }
@@ -51,21 +52,21 @@ export class BookFlightComponent implements OnInit {
   }
 
   book() {
-    if(this.form.invalid) return;
+    if (this.form.invalid) return;
 
     console.log(`Booking ${this.form.get('number')?.value} passengers for the flight ${this.flightId}`);
 
-    const booking : BookDto = {
+    const booking: BookDto = {
       flightId: this.flight.id,
       passengerEmail: this.authService.currentUser?.email,
       numberOfSeats: this.form.get('number')?.value!
     }
 
     this.flightService.BookFlight(booking)
-      .subscribe({next: _=> this.router.navigate(['/my-bookings']), error:this.handleError});
+      .subscribe({next: _ => this.router.navigate(['/my-bookings']), error: this.handleError});
   }
 
-  get number(){
+  get number() {
     return this.form.controls.number;
   }
 }

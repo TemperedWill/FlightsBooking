@@ -1,4 +1,5 @@
 ﻿using System.Collections;
+using System.ComponentModel.DataAnnotations;
 using FlightsBooking.Data;
 using FlightsBooking.ReadModels;
 using FlightsBooking.Domain.Entities;
@@ -46,13 +47,20 @@ namespace FlightsBooking.Controllers {
         }
 
         
-        [Authorize]
         [ProducesResponseType(typeof(IEnumerable<FlightRm>), 200)]
         [HttpGet]
+        [Authorize(Roles = "FlightPassenger")] // Check roles 
+        [Authorize(Roles = "Admin")] // Write checks in a column if you need AND check
+        [Authorize(Roles = "FlightPassenger, Manager")] // Comma separates roles for OR check
         public IEnumerable<FlightRm> Search([FromQuery] FlightSearchParameters @params) {   // We grab params from query string from GET URL
             
             _logger.LogInformation("searching for flight with destination: {destination}", @params.Destination);
 
+            var user = HttpContext.User.Identity;
+            // user.Name comes from claims.Name in token, so if you want to add new info to user data, head there
+            Console.WriteLine($"is user authenticated: {user.IsAuthenticated} user auth type: {user.AuthenticationType} user email: {user.Name}" +
+                              $"user role: ");
+            
             IQueryable<Flight> flights = _entities.Flights;
             
             // Adding search parameters 
